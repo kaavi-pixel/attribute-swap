@@ -1,0 +1,15 @@
+{
+	"key.category.attributeswap.main": "Attribute Swap",
+	"key.attributeswap.slot.1": "Swap attack: slot 1",
+	"key.attributeswap.slot.2": "Swap attack: slot 2",
+	"key.attributeswap.slot.3": "Swap attack: slot 3",
+	"key.attributeswap.slot.4": "Swap attack: slot 4",
+	"key.attributeswap.slot.5": "Swap attack: slot 5",
+	"key.attributeswap.slot.6": "Swap attack: slot 6",
+	"key.attributeswap.slot.7": "Swap attack: slot 7",
+	"key.attributeswap.slot.8": "Swap attack: slot 8",
+	"key.attributeswap.slot.9": "Swap attack: slot 9",
+	"attributeswap.config.title": "Attribute Swap",
+	"attributeswap.config.enabled": "Attribute swap",
+	"attributeswap.config.return": "Return to original slot"
+}

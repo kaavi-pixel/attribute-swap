@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "attributeswap",
+	"version": "${version}",
+	"name": "Attribute Swap",
+	"description": "Press a key to attack with another hotbar slot's item while keeping your current item's damage and attack speed (MC-28289). Slot keys are set in Controls (default R for slot 4). On/off and return-to-slot settings in Mod Menu.",
+	"authors": [
+		"Kavi Bhushan"
+	],
+	"license": "CC0-1.0",
+	"icon": "assets/attributeswap/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"pro.bhushan.attributeswap.AttributeSwapClient"
+		],
+		"modmenu": [
+			"pro.bhushan.attributeswap.config.AttributeSwapModMenu"
+		]
+	},
+	"mixins": [
+		{
+			"config": "attributeswap.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-key-mapping-api-v1": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

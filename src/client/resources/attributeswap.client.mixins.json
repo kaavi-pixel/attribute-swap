@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "pro.bhushan.attributeswap.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"MinecraftInvoker",
+		"MinecraftMixin",
+		"MultiPlayerGameModeInvoker"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
