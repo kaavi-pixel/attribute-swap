@@ -1,6 +1,6 @@
-# Attribute Swap 1.0.0
+# Attribute Swap 1.0.0 (Minecraft 26.2)
 
-Client-side Fabric mod for Minecraft 26.3 (Java 25, Fabric Loader 0.19.5+). Requires Fabric API (for the key bindings). Mod Menu (21.0.0 for 26.3) is optional and adds the settings button.
+Client-side Fabric mod for Minecraft 26.2 (Java 25, Fabric Loader 0.19.5+). Requires Fabric API (for the key bindings). Mod Menu (20.0.3 for 26.2) is optional and adds the settings button.
 
 ## What it does
 
@@ -46,7 +46,7 @@ Because all three packets go out in one tick, the server never ticks with the sw
 
 ## Testing
 
-`./gradlew runClientGameTest` runs a real 26.3 client against an integrated and a dedicated server. A no-AI cow with 1000 health and fire resistance is the target. The tests cover:
+`./gradlew runClientGameTest` runs a real 26.2 client against an integrated and a dedicated server. A no-AI cow with 1000 health and fire resistance is the target. The tests cover:
 
 - A normal hit with each item, as a baseline.
 - The swap key with Fire Aspect and Sharpness V items.
@@ -57,3 +57,7 @@ Because all three packets go out in one tick, the server never ticks with the sw
 - A mace smash from a 5.7-block fall.
 
 They check the server-side damage, fire, durability of each item, and the server's selected slot on every tick. On headless Linux, run them under Xvfb with `SDL_VIDEO_FORCE_EGL=1`.
+
+## Versions
+
+This branch (`mc/26.2`) is the Minecraft 26.2 build. The `main` branch is the 26.3 build. The code is the same apart from key codes: 26.2 uses GLFW key codes (`InputConstants.Type.KEYSYM`), 26.3 uses SDL scancodes (`InputConstants.Type.KEYBOARD`). The default key is R on both.

@@ -163,7 +163,7 @@ public class AttributeSwapClientGameTest implements FabricClientGameTest {
 
 	private static void setKey(ClientGameTestContext ctx, int slot, int key) {
 		ctx.runOnClient(mc -> {
-			AttributeSwapClient.SWAP_KEYS[slot].setKey(key < 0 ? InputConstants.UNKNOWN : InputConstants.Type.KEYBOARD.getOrCreate(key));
+			AttributeSwapClient.SWAP_KEYS[slot].setKey(key < 0 ? InputConstants.UNKNOWN : InputConstants.Type.KEYSYM.getOrCreate(key));
 			KeyMapping.resetMapping();
 		});
 	}

@@ -18,7 +18,7 @@ public class AttributeSwapClient implements ClientModInitializer {
 		for (int i = 0; i < 9; i++) {
 			int key = i == DEFAULT_SLOT ? InputConstants.KEY_R : InputConstants.UNKNOWN.getValue();
 			SWAP_KEYS[i] = KeyMappingHelper.registerKeyMapping(
-				new KeyMapping("key.attributeswap.slot." + (i + 1), InputConstants.Type.KEYBOARD, key, category, i));
+				new KeyMapping("key.attributeswap.slot." + (i + 1), InputConstants.Type.KEYSYM, key, category, i));
 		}
 	}
 }
