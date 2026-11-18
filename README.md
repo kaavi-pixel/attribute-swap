@@ -57,3 +57,8 @@ Because all three packets go out in one tick, the server never ticks with the sw
 - A mace smash from a 5.7-block fall.
 
 They check the server-side damage, fire, durability of each item, and the server's selected slot on every tick. On headless Linux, run them under Xvfb with `SDL_VIDEO_FORCE_EGL=1`.
+
+## Versions
+
+- Minecraft 26.3: this branch (`main`), `attributeswap-1.0.0.jar`.
+- Minecraft 26.2: branch `mc/26.2`, `attributeswap-1.0.0+26.2.jar`. Same behaviour; only the key code type differs (26.2 uses GLFW key codes, 26.3 uses SDL scancodes). Use Mod Menu 20.0.3 with it.
