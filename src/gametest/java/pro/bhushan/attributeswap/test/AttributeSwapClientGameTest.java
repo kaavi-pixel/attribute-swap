@@ -143,6 +143,7 @@ public class AttributeSwapClientGameTest implements FabricClientGameTest {
 		maceHit(ctx, server, conn, label + " J control: mace falling", "mace", false);
 		maceHit(ctx, server, conn, label + " K swap sword->mace falling", SWORD, true);
 		ctx.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+		triples(ctx, server, conn, label);
 		// Spears only in singleplayer: the test's dedicated server shares the client JVM, and spear items hold a
 		// DAMAGE_TYPE holder re-bound to the client's registries on join, so the server can't encode it there.
 		if (!label.equals("singleplayer")) return;
@@ -159,6 +160,68 @@ public class AttributeSwapClientGameTest implements FabricClientGameTest {
 			ctx.getInput().pressKey(InputConstants.KEY_R);
 		});
 		spear = false;
+	}
+
+	private static final String AXE = "iron_axe";
+	// Dedicated test server can't hold real spears (see above); a stick with the spear's attack range stands in.
+	private static final String RANGE_STICK = "stick[attack_range={min_reach:2.0f,max_reach:4.5f,min_creative_reach:2.0f,max_creative_reach:6.5f,hitbox_margin:0.125f,mob_factor:0.5f}]";
+
+	private static void triples(ClientGameTestContext ctx, TestServerContext server, TestServerConnection conn, String label) {
+		AttributeSwapConfig cfg = AttributeSwapConfig.get();
+		String reach = label.equals("singleplayer") ? "iron_spear" : RANGE_STICK;
+		// Player eye ~4.06 blocks from the cow's hitbox: beyond normal reach (3), inside spear reach (4.5).
+		triple(ctx, server, conn, label + " P triple: sword, R -> axe, spear in slot 7, cow 4.06 away (expect 7 dmg, axe durability, spear untouched)", reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		triple(ctx, server, conn, label + " Q control: left click with sword at 4.06 (expect nothing)", reach, 98.0, () -> ctx.getInput().pressKey(o -> o.keyAttack));
+		triple(ctx, server, conn, label + " R no reach item in hotbar (expect nothing)", SHARP, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.spearReach = false;
+		triple(ctx, server, conn, label + " S spear reach off (expect nothing)", reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.spearReach = true;
+		cfg.reachSlot = 7;
+		triple(ctx, server, conn, label + " T spear slot set to 7 (expect 7 dmg)", reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.reachSlot = 2;
+		triple(ctx, server, conn, label + " U spear slot set to 2, spear in 7 (expect nothing)", reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.reachSlot = 0;
+		triple(ctx, server, conn, label + " V cow 5.06 away, past spear reach (expect nothing)", reach, 97.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		triple(ctx, server, conn, label + " W close cow 1.55 with spear in hotbar (expect normal swap 7 dmg)", reach, 100.5, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.returnToSlot = false;
+		triple(ctx, server, conn, label + " X triple with return off (expect 7 dmg, ends on slot 4)", reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		cfg.returnToSlot = true;
+		int before = results.size();
+		for (int i = 0; i < 10; i++) {
+			triple(ctx, server, conn, label + " Y repeat triple " + i, reach, 98.0, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+			triple(ctx, server, conn, label + " Z repeat close swap " + i, reach, 100.5, () -> ctx.getInput().pressKey(InputConstants.KEY_R));
+		}
+		int ok = 0, total = 0;
+		for (String r : new ArrayList<>(results.subList(before, results.size()))) {
+			total++;
+			String after = r.substring(r.indexOf("| after "));
+			if (after.contains("cowHp=993.00") && after.contains("s4=iron_axe:dmg2") && after.contains("serverSlotPerTick [0, 0, 0, 0, 0, 0, 0, 0, 0, 0")) ok++;
+			else results.add(label + " REPEAT-FAIL " + r);
+		}
+		results.add(label + " Y/Z repeats ok " + ok + "/" + total);
+		ctx.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+	}
+
+	private static void triple(ClientGameTestContext ctx, TestServerContext server, TestServerConnection conn, String name, String slot7, double px, Runnable action) {
+		setup(ctx, server, conn, SWORD, px, 150, 100.5);
+		server.runCommand("item replace entity @a hotbar.3 with " + AXE);
+		server.runCommand("item replace entity @a hotbar.6 with " + slot7);
+		ctx.waitTicks(5);
+		conn.waitForClientboundPackets();
+		ctx.getInput().lookAt(COW_BLOCK);
+		ctx.waitTicks(2);
+		String before = state(ctx, server, conn);
+		synchronized (serverSlots) { serverSlots.clear(); }
+		sampling = true;
+		action.run();
+		ctx.waitTicks(10);
+		conn.waitForClientboundPackets();
+		ctx.waitTicks(2);
+		sampling = false;
+		String slots;
+		synchronized (serverSlots) { slots = serverSlots.toString(); }
+		if (slots.length() > 120) slots = slots.substring(0, 120) + "...";
+		results.add(name + " | before " + before + " | after " + state(ctx, server, conn) + " | serverSlotPerTick " + slots);
 	}
 
 	private static void setKey(ClientGameTestContext ctx, int slot, int key) {

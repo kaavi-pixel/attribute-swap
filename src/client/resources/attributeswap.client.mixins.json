@@ -3,6 +3,7 @@
 	"package": "pro.bhushan.attributeswap.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"ConnectionMixin",
 		"MinecraftInvoker",
 		"MinecraftMixin",
 		"MultiPlayerGameModeInvoker"
