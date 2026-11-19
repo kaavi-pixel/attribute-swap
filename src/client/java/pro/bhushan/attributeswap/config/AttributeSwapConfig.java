@@ -23,6 +23,12 @@ public final class AttributeSwapConfig {
 	/** Switch back to the slot you were on in the same tick, so its attack cooldown is kept. */
 	public boolean returnToSlot = true;
 
+	/** Triple swap: if nothing is in normal reach, pick the target with a hotbar spear's reach. */
+	public boolean spearReach = true;
+
+	/** Hotbar slot (1-9) holding the reach item, or 0 for any slot. */
+	public int reachSlot = 0;
+
 	public static AttributeSwapConfig get() {
 		if (instance == null) instance = load();
 		return instance;
@@ -42,7 +48,9 @@ public final class AttributeSwapConfig {
 				LOGGER.warn("Could not read {}, using defaults", path, e);
 			}
 		}
-		return config == null ? new AttributeSwapConfig() : config;
+		if (config == null) config = new AttributeSwapConfig();
+		if (config.reachSlot < 0 || config.reachSlot > 9) config.reachSlot = 0;
+		return config;
 	}
 
 	public void save() {

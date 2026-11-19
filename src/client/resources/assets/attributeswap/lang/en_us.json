@@ -11,5 +11,8 @@
 	"key.attributeswap.slot.9": "Swap attack: slot 9",
 	"attributeswap.config.title": "Attribute Swap",
 	"attributeswap.config.enabled": "Attribute swap",
-	"attributeswap.config.return": "Return to original slot"
+	"attributeswap.config.return": "Return to original slot",
+	"attributeswap.config.spear_reach": "Spear reach (triple swap)",
+	"attributeswap.config.reach_slot": "Spear slot",
+	"attributeswap.config.reach_slot.any": "Any"
 }

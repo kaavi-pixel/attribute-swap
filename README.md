@@ -1,4 +1,4 @@
-# Attribute Swap 1.0.0 (Minecraft 26.2)
+# Attribute Swap 1.1.0 (Minecraft 26.2)
 
 Client-side Fabric mod for Minecraft 26.2 (Java 25, Fabric Loader 0.19.5+). Requires Fabric API (for the key bindings). Mod Menu (20.0.3 for 26.2) is optional and adds the settings button.
 
@@ -10,6 +10,17 @@ Example: diamond sword in hand, Fire Aspect wooden sword in slot 4. The hit does
 
 The swap slot's item supplies its enchantments, mace smash damage, spear jab, and durability use. The held item's attack damage and attack speed (cooldown) are used.
 
+## Triple swap (spear reach)
+
+With a spear anywhere in your hotbar, the swap key also reaches mobs and players up to 4.5 blocks away, like the spear does. Example: diamond sword held, axe in slot 4, spear in slot 7, target 4 blocks away. Press R and the hit does the sword's 7 damage at the sword's cooldown, the axe disables a raised shield and takes the durability, and the spear supplies the reach.
+
+This is the sword → spear → axe triple swap, done without selecting the spear. The spear's range only decides which target your client picks, so the mod picks the target with the spear's range and never sends a switch to the spear slot. The server never sees the spear held, the same result as swapping to a ghost spear.
+
+- It only applies when nothing is in normal reach. Closer targets get a normal swap.
+- The spear's 2-block minimum range applies to the extended pick, as with a held spear. Targets that close are already in normal reach.
+- Walls block it the same way they block a spear.
+- No spear in the hotbar (or the setting off) means no extra reach.
+
 ## Keys
 
 Options > Controls > Key Binds > Attribute Swap. There is one entry per hotbar slot, "Swap attack: slot 1" to "Swap attack: slot 9".
@@ -18,7 +29,7 @@ Options > Controls > Key Binds > Attribute Swap. There is one entry per hotbar s
 - To swap with a different slot, unbind slot 4 and bind the slot you want. You can bind several slots at once.
 - The mod never presses or reads your hotbar keys, so it works whatever keys you use for the hotbar, including none.
 
-The key does nothing if you're aiming at a block or nothing, unless the swap slot holds a spear, since a spear jab doesn't need a target. It also does nothing in spectator mode, while using an item (eating, blocking, drawing a bow), or with a screen open. If the swap slot is the slot you're already on, it's a normal attack.
+The key does nothing if you're aiming at a block or nothing (beyond spear reach, see above), unless the swap slot holds a spear, since a spear jab doesn't need a target. It also does nothing in spectator mode, while using an item (eating, blocking, drawing a bow), or with a screen open. If the swap slot is the slot you're already on, it's a normal attack.
 
 ## Settings
 
@@ -26,6 +37,8 @@ Mod Menu > Attribute Swap. Saved in `config/attributeswap.json`.
 
 - Attribute swap: ON/OFF. OFF makes the swap keys do nothing. Default ON.
 - Return to original slot: ON/OFF. Default ON. With it OFF you stay on the swap slot after the hit, like doing it by hand.
+- Spear reach (triple swap): ON/OFF. Default ON.
+- Spear slot: Any, or 1 to 9. Any uses whichever hotbar item has the longest attack range. A number only uses that slot.
 
 ## How it works
 
@@ -37,7 +50,7 @@ On a key press the mod runs inside `Minecraft.handleKeybinds`, before vanilla's 
 2. Run vanilla's attack (`Minecraft.startAttack`), which sends the slot change and then the attack packet.
 3. Select the original slot again and send that slot change right away.
 
-Because all three packets go out in one tick, the server never ticks with the swap item selected. Your held item's attributes are never replaced, and its cooldown isn't reset by an item change.
+The three packets are written without flushing and then flushed once, so they reach the server in one network read and are handled in the same server tick. The server never ticks with the swap item selected. Your held item's attributes are never replaced, and its cooldown isn't reset by an item change.
 
 ## Notes
 
@@ -55,6 +68,8 @@ Because all three packets go out in one tick, the server never ticks with the sw
 - Return turned off.
 - Spear jabs on a target and at the sky (singleplayer only, because the test server shares the client process and spear damage types can't be sent between them there).
 - A mace smash from a 5.7-block fall.
+- Triple swap at 4.06 blocks: sword held, axe swap, spear in the hotbar. Controls for a plain left click at that range, no spear, the setting off, a fixed spear slot (right and wrong slot), a target 5.06 blocks away, a close target, and return off. The dedicated server uses a stick with the spear's attack range, since real spears can't be sent in the in-process test server.
+- 10 triple swaps and 10 normal swaps in a row, checking the server's slot every tick, to catch packets split across server ticks.
 
 They check the server-side damage, fire, durability of each item, and the server's selected slot on every tick. On headless Linux, run them under Xvfb with `SDL_VIDEO_FORCE_EGL=1`.
 
